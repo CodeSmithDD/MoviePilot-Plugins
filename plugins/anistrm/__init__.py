@@ -52,17 +52,17 @@ def retry(ExceptionToCheck: Any,
 
 class ANiStrm(_PluginBase):
     # 插件名称
-    plugin_name = "ANiStrm"
+    plugin_name = "ANiStrm-DDSelfUsed"
     # 插件描述
     plugin_desc = "自动获取当季所有番剧，免去下载，轻松拥有一个番剧媒体库"
     # 插件图标
-    plugin_icon = "https://raw.githubusercontent.com/honue/MoviePilot-Plugins/main/icons/anistrm.png"
+    plugin_icon = "https://raw.githubusercontent.com/CodeSmithDD/MoviePilot-Plugins/main/icons/anistrm.png"
     # 插件版本
-    plugin_version = "2.4.2"
+    plugin_version = "2.4.4"
     # 插件作者
-    plugin_author = "honue"
+    plugin_author = "CodeSmithDD"
     # 作者主页
-    author_url = "https://github.com/honue"
+    author_url = "https://github.com/CodeSmithDD"
     # 插件配置项ID前缀
     plugin_config_prefix = "anistrm_"
     # 加载顺序
