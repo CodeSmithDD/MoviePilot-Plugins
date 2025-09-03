@@ -219,6 +219,7 @@ class ANiStrm(_PluginBase):
             logger.info(f'本次处理 {len(name_list)} 个文件')
             for file_name in name_list:
                 if self.__touch_strm_file(file_name=file_name):
+                    logger.info(f'创建 {file_name}.strm 文件成功')
                     cnt += 1
         logger.info(f'新创建了 {cnt} 个strm文件')
 
