@@ -167,16 +167,17 @@ class ANiStrm(_PluginBase):
             logger.debug(f'季度API生成的URL，使用新格式：{file_name}')
             # 季度API生成的URL，使用新格式
             encoded_filename = quote(file_name, safe='')
-            src_url = f'https://openani.an-i.workers.dev/{self._date}/{encoded_filename}.mp4?d=true'
+            #
+            src_url = f'https://openani.an-i.workers.dev/{self._date}/{encoded_filename}'
             logger.debug(f'季度API生成的SRL_URL: {src_url}')
         else:
-            # 检查API获取的URL格式是否符合要求
-            if self._is_url_format_valid(file_url):
-                # 格式符合要求，直接使用
-                src_url = file_url
-            else:
-                # 格式不符合要求，进行转换
-                src_url = self._convert_url_format(file_url)
+            src_url = file_url
+
+        # 检查API获取的URL格式是否符合要求
+        if not self._is_url_format_valid(src_url):
+            # 格式不符合要求，进行转换
+            src_url = self._convert_url_format(src_url)
+
         logger.debug(f'创建 {file_name}.strm 文件，URL：{src_url}')
         file_path = f'{self._storageplace}/{file_name}.strm'
         if os.path.exists(file_path):
