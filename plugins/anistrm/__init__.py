@@ -134,7 +134,7 @@ class ANiStrm(_PluginBase):
         url = f'https://openani.an-i.workers.dev/{self.__get_ani_season()}/'
 
         rep = RequestUtils(ua=settings.USER_AGENT if settings.USER_AGENT else None,
-                           proxies=settings.PROXY if settings.PROXY else None).post(url=url)
+                           proxies=settings.PROXY if settings.PROXY else None).post(url=url,json={})
         logger.debug(rep.text)
         files_json = rep.json()['files']
         return [file['name'] for file in files_json]
