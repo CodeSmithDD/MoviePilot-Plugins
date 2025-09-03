@@ -163,6 +163,7 @@ class ANiStrm(_PluginBase):
 
     def __touch_strm_file(self, file_name, file_url: str = None) -> bool:
         if not file_url:
+            logger.info(f'季度API生成的URL，使用新格式：{file_name}')
             # 季度API生成的URL，使用新格式
             encoded_filename = quote(file_name, safe='')
             src_url = f'https://openani.an-i.workers.dev/{self._date}/{encoded_filename}.mp4?d=true'
@@ -174,7 +175,7 @@ class ANiStrm(_PluginBase):
             else:
                 # 格式不符合要求，进行转换
                 src_url = self._convert_url_format(file_url)
-        
+        logger.info(f'创建 {file_name}.strm 文件，URL：{src_url}')
         file_path = f'{self._storageplace}/{file_name}.strm'
         if os.path.exists(file_path):
             logger.debug(f'{file_name}.strm 文件已存在')
