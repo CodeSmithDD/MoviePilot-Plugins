@@ -13,6 +13,7 @@ from typing import Any, List, Dict, Tuple, Optional
 from app.log import logger
 import xml.dom.minidom
 from app.utils.dom import DomUtils
+from urllib.parse import quote
 
 
 def retry(ExceptionToCheck: Any,
@@ -167,6 +168,7 @@ class ANiStrm(_PluginBase):
             # 季度API生成的URL，使用新格式
             encoded_filename = quote(file_name, safe='')
             src_url = f'https://openani.an-i.workers.dev/{self._date}/{encoded_filename}.mp4?d=true'
+            logger.info(f'季度API生成的SRL_URL: {src_url}')
         else:
             # 检查API获取的URL格式是否符合要求
             if self._is_url_format_valid(file_url):
