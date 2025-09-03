@@ -210,14 +210,14 @@ class ANiStrm(_PluginBase):
         # 增量添加更新
         if not fulladd:
             rss_info_list = self.get_latest_list()
-            logger.info(f'本次处理 {len(rss_info_list)} 个文件')
+            logger.info(f'处理 {len(rss_info_list)} 个文件')
             for rss_info in rss_info_list:
                 if self.__touch_strm_file(file_name=rss_info['title'], file_url=rss_info['link']):
                     cnt += 1
         # 全量添加当季
         else:
             name_list = self.get_current_season_list()
-            logger.info(f'本次处理 {len(name_list)} 个文件')
+            logger.info(f'当季处理 {len(name_list)} 个文件')
             for file_name in name_list:
                 if self.__touch_strm_file(file_name=file_name):
                     logger.info(f'创建 {file_name}.strm 文件成功')
