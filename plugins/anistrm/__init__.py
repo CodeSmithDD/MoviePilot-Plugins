@@ -227,7 +227,7 @@ class ANiStrm(_PluginBase):
                     encoded_folder_name = quote(folder_name, safe='')
                     folder_url = f'{url}{encoded_folder_name}/'
                     logger.info(f'发现文件夹: {folder_name}, 递归获取其中文件: {folder_url}')
-                    time.sleep(1)
+                    time.sleep(5)
                     files.extend(_get_files(folder_url))
                 # 如果是视频文件，添加到结果列表
                 elif file.get('mimeType') == 'video/mp4':
