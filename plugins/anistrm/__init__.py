@@ -286,13 +286,16 @@ class ANiStrm(_PluginBase):
 
         logger.debug(f'创建 {file_name}.strm 文件，URL：{src_url}')
         file_path = f'{self._storageplace}/{file_name}.strm'
-        if os.path.exists(file_path):
-            logger.debug(f'{file_name}.strm 文件已存在')
-            return False
+        # if os.path.exists(file_path):
+        #     logger.debug(f'{file_name}.strm 文件已存在')
+        #     return False
         try:
             with open(file_path, 'w') as file:
                 file.write(src_url)
-                logger.debug(f'创建 {file_name}.strm 文件成功')
+                if os.path.exists(file_path):
+                    logger.debug(f'更新 {file_name}.strm 文件成功')
+                else:
+                    logger.debug(f'创建 {file_name}.strm 文件成功')
                 return True
         except Exception as e:
             logger.error('创建strm源文件失败：' + str(e))
