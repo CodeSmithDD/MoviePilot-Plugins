@@ -81,6 +81,8 @@ class ANiStrm(_PluginBase):
     _storageplace = None
     _custom_domain = None
     _convert_traditional = False
+    _custom_season = None
+    _get_custom_season = False  # 是否获取指定季度番剧（一次性操作）
     _opencc = OpenCC('t2s')
 
     # 定时器
@@ -98,6 +100,8 @@ class ANiStrm(_PluginBase):
             self._storageplace = config.get("storageplace")
             self._custom_domain = config.get("custom_domain") or "openani.an-i.workers.dev"
             self._convert_traditional = config.get("convert_traditional", False)
+            self._custom_season = config.get("custom_season")
+            self._get_custom_season = config.get("get_custom_season", False)
             # 加载模块
         if self._enabled or self._onlyonce:
             # 定时服务
@@ -127,7 +131,36 @@ class ANiStrm(_PluginBase):
                 self._scheduler.print_jobs()
                 self._scheduler.start()
 
+    def _convert_title(self, title: str) -> str:
+        if self._convert_traditional:
+            return self._opencc.convert(title)
+        return title
+
+    def __validate_custom_season(self, season: str) -> bool:
+        """验证自定义季度格式是否正确"""
+        if not season:
+            return False
+        try:
+            # 检查格式是否为"年份-月份"
+            parts = season.split('-')
+            if len(parts) != 2:
+                return False
+
+            year = int(parts[0])
+            month = int(parts[1])
+            # 验证月份是否为1、4、7、10中的一个（季度起始月）
+            return month in [1, 4, 7, 10] and year > 2000
+        except:
+            logger.error(f"自定义季度格式错误: {season}，应为'年份-月份'，如'2025-1'")
+            return False
+
     def __get_ani_season(self, idx_month: int = None) -> str:
+        # 如果启用了获取指定季度且指定季度有效，则使用指定季度
+        if self._get_custom_season and self._custom_season and self.__validate_custom_season(self._custom_season):
+            self._date = self._custom_season
+            logger.info(f"使用指定季度: {self._custom_season}")
+            return self._custom_season
+
         current_date = datetime.now()
         current_year = current_date.year
         current_month = idx_month if idx_month else current_date.month
@@ -135,11 +168,6 @@ class ANiStrm(_PluginBase):
             if month in [10, 7, 4, 1]:
                 self._date = f'{current_year}-{month}'
                 return f'{current_year}-{month}'
-
-    def _convert_title(self, title: str) -> str:
-        if self._convert_traditional:
-            return self._opencc.convert(title)
-        return title
 
     @retry(Exception, tries=3, logger=logger, ret=[])
     def get_current_season_list(self) -> List:
@@ -372,6 +400,41 @@ class ANiStrm(_PluginBase):
                                 'component': 'VCol',
                                 'props': {
                                     'cols': 12,
+                                    'md': 4
+                                },
+                                'content': [
+                                    {
+                                        'component': 'VSwitch',
+                                        'props': {
+                                            'model': 'get_custom_season',
+                                            'label': '获取指定季度番剧(一次性)',
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                'component': 'VCol',
+                                'props': {
+                                    'cols': 12,
+                                    'md': 4
+                                },
+                                'content': [
+                                    {
+                                        'component': 'VTextField',
+                                        'props': {
+                                            'model': 'custom_season',
+                                            'label': '指定季度',
+                                            'placeholder': '格式:年份-月份，如2025-1',
+                                            'hint': '用于一次性获取指定季度番剧'
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                'component': 'VCol',
+                                'props': {
+                                    'cols': 12,
+                                    'md': 4
                                 },
                                 'content': [
                                     {
@@ -380,7 +443,20 @@ class ANiStrm(_PluginBase):
                                             'model': 'convert_traditional',
                                             'label': '繁体转简体',
                                         }
-                                    },
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        'component': 'VRow',
+                        'content': [
+                            {
+                                'component': 'VCol',
+                                'props': {
+                                    'cols': 12,
+                                },
+                                'content': [
                                     {
                                         'component': 'VAlert',
                                         'props': {
