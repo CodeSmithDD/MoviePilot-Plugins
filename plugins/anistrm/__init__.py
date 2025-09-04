@@ -171,13 +171,30 @@ class ANiStrm(_PluginBase):
 
     @retry(Exception, tries=3, logger=logger, ret=[])
     def get_current_season_list(self) -> List:
-        url = f'https://{self._custom_domain}/{self.__get_ani_season()}/'
+        def _get_files(url: str) -> List:
+            rep = RequestUtils(ua=settings.USER_AGENT if settings.USER_AGENT else None,
+                               proxies=settings.PROXY if settings.PROXY else None).post(url=url, json={})
+            logger.debug(rep.text)
+            files_json = rep.json()['files']
 
-        rep = RequestUtils(ua=settings.USER_AGENT if settings.USER_AGENT else None,
-                           proxies=settings.PROXY if settings.PROXY else None).post(url=url,json={})
-        logger.debug(rep.text)
-        files_json = rep.json()['files']
-        return [self._convert_title(file['name']) for file in files_json]
+            files = []
+            for file in files_json:
+                # 如果是文件夹，递归获取其中的文件
+                if file.get('mimeType') == 'application/vnd.google-apps.folder':
+                    folder_name = file['name']
+                    # 对文件夹名进行编码以处理特殊字符
+                    encoded_folder_name = quote(folder_name, safe='')
+                    folder_url = f'{url}{encoded_folder_name}/'
+                    logger.info(f'发现文件夹: {folder_name}, 递归获取其中文件: {folder_url}')
+                    time.sleep(1)
+                    files.extend(_get_files(folder_url))
+                # 如果是视频文件，添加到结果列表
+                elif file.get('mimeType') == 'video/mp4':
+                    files.append(self._convert_title(file['name']))
+            return files
+
+        base_url = f'https://{self._custom_domain}/{self.__get_ani_season()}/'
+        return _get_files(base_url)
 
     @retry(Exception, tries=3, logger=logger, ret=[])
     def get_latest_list(self) -> List:
