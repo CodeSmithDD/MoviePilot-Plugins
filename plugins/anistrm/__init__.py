@@ -132,8 +132,9 @@ class ANiStrm(_PluginBase):
                 self._scheduler.print_jobs()
                 self._scheduler.start()
 
-    def _clean_filename(filename):
+    def _clean_filename(self, filename: str):
         # 定义常见全角符号到半角符号的映射，或直接移除
+        cleaned_filename = filename
         fullwidth_to_halfwidth = {
             '\uFF0D': '-',  # 全角破折号（－）替换为半角连字符（-）
             '\uFF1A': ':',  # 全角冒号（：）替换为半角冒号（:）
@@ -157,25 +158,25 @@ class ANiStrm(_PluginBase):
 
         # 替换全角符号
         for fullwidth, halfwidth in fullwidth_to_halfwidth.items():
-            filename = filename.replace(fullwidth, halfwidth)
+            cleaned_filename = cleaned_filename.replace(fullwidth, halfwidth)
 
         # 去掉中文和中文之间的空格
-        filename = re.sub(r'([\u4e00-\u9fff])\s+([\u4e00-\u9fff])', r'\1\2', filename)
+        cleaned_filename = re.sub(r'([\u4e00-\u9fff])\s+([\u4e00-\u9fff])', r'\1\2', cleaned_filename)
         # 去掉中文和英文之间的空格
-        filename = re.sub(r'([\u4e00-\u9fff])\s+([a-zA-Z0-9])', r'\1\2', filename)
-        filename = re.sub(r'([a-zA-Z0-9])\s+([\u4e00-\u9fff])', r'\1\2', filename)
+        cleaned_filename = re.sub(r'([\u4e00-\u9fff])\s+([a-zA-Z0-9])', r'\1\2', cleaned_filename)
+        cleaned_filename = re.sub(r'([a-zA-Z0-9])\s+([\u4e00-\u9fff])', r'\1\2', cleaned_filename)
         # 将中文和中文之间的“-”替换为空格
-        filename = re.sub(r'([\u4e00-\u9fff])\s*-([\u4e00-\u9fff])', r'\1 \2', filename)
+        cleaned_filename = re.sub(r'([\u4e00-\u9fff])\s*-([\u4e00-\u9fff])', r'\1 \2', cleaned_filename)
         # 将中文和“-”替换为中文
-        filename = re.sub(r'([\u4e00-\u9fff])(-)', r'\1', filename)
+        cleaned_filename = re.sub(r'([\u4e00-\u9fff])(-)', r'\1', cleaned_filename)
 
-        return filename
+        return cleaned_filename
 
     def _convert_title(self, title: str) -> str:
-        # title = self._clean_filename(title)
+        new_title = self._clean_filename(title)
         if self._convert_traditional:
-            return self._opencc.convert(title)
-        return title
+            return self._opencc.convert(new_title)
+        return new_title
 
     def __validate_custom_season(self, season: str) -> bool:
         """验证自定义季度格式是否正确"""
