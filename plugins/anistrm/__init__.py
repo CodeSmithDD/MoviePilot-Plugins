@@ -232,7 +232,12 @@ class ANiStrm(_PluginBase):
                     files.extend(_get_files(folder_url))
                 # 如果是视频文件，添加到结果列表
                 elif file.get('mimeType') == 'video/mp4':
-                    files.append(self._convert_title(file['name']))
+                    file_name = file['name']
+                    convert_name = self._convert_title(file_name)
+                    files.append({
+                        'file_name': file_name,
+                        'convert_name': convert_name
+                    })
             return files
 
         base_url = f'https://{self._custom_domain}/{self.__get_ani_season()}/'
@@ -260,13 +265,16 @@ class ANiStrm(_PluginBase):
             ret_array.append(rss_info)
         return ret_array
 
-    def __touch_strm_file(self, file_name, file_url: str = None) -> bool:
+    def __touch_strm_file(self, file_name, content_name: str = None, file_url: str = None) -> bool:
+        if not content_name:
+            content_name = file_name
+
         if not file_url:
-            logger.debug(f'季度API生成的URL，使用新格式：{file_name}')
+            logger.debug(f'季度API生成的URL，使用新格式：{content_name}')
             # 季度API生成的URL，使用新格式
-            encoded_filename = quote(file_name, safe='')
+            encoded_content_name = quote(content_name, safe='')
             #
-            src_url = f'https://{self._custom_domain}/{self._date}/{encoded_filename}'
+            src_url = f'https://{self._custom_domain}/{self._date}/{encoded_content_name}'
             logger.debug(f'季度API生成的SRL_URL: {src_url}')
         else:
             src_url = file_url
@@ -319,9 +327,9 @@ class ANiStrm(_PluginBase):
         else:
             name_list = self.get_current_season_list()
             logger.info(f'本次处理 {len(name_list)} 个文件')
-            for file_name in name_list:
-                if self.__touch_strm_file(file_name=file_name):
-                    logger.debug(f'创建 {file_name}.strm 文件成功')
+            for file_info in name_list:
+                if self.__touch_strm_file(file_name=file_info['convert_name'],content_name=file_info['file_name']):
+                    logger.debug(f'创建 {file_info["convert_name"]}.strm 文件成功')
                     cnt += 1
         logger.info(f'新创建了 {cnt} 个strm文件')
 
