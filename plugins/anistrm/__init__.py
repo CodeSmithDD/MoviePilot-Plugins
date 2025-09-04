@@ -292,9 +292,9 @@ class ANiStrm(_PluginBase):
         try:
             with open(file_path, 'w') as file:
                 if os.path.exists(file_path):
-                    logger.debug(f'更新 {file_name}.strm 文件成功')
+                    logger.debug(f'更新 {file_name}.strm 文件')
                 else:
-                    logger.debug(f'创建 {file_name}.strm 文件成功')
+                    logger.debug(f'创建 {file_name}.strm 文件')
                 file.write(src_url)
                 return True
         except Exception as e:
