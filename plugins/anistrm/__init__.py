@@ -172,7 +172,7 @@ class ANiStrm(_PluginBase):
         return filename
 
     def _convert_title(self, title: str) -> str:
-        title = self._clean_filename(title)
+        # title = self._clean_filename(title)
         if self._convert_traditional:
             return self._opencc.convert(title)
         return title
