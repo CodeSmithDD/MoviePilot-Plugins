@@ -168,7 +168,10 @@ class ANiStrm(_PluginBase):
                                   cleaned_filename)
         cleaned_filename = re.sub(r'([\u4e00-\u9fff]+)\s+([a-zA-Z0-9]+)', r'\1\2',
                                   cleaned_filename)
-        cleaned_filename = re.sub(r'([a-zA-Z0-9]+)\s+([\u4e00-\u9fff]+)', r'\1\2',
+        #英文在前面不处理
+        #cleaned_filename = re.sub(r'([a-zA-Z0-9]+)\s+([\u4e00-\u9fff]+)', r'\1\2',cleaned_filename)
+        #数字在前面处理
+        cleaned_filename = re.sub(r'([0-9]+)\s+([\u4e00-\u9fff]+)', r'\1\2',
                                   cleaned_filename)
 
         # 将中文和中文之间的“-”替换为空格
