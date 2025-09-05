@@ -236,7 +236,8 @@ class ANiStrm(_PluginBase):
                     convert_name = self._convert_title(file_name)
                     files.append({
                         'file_name': file_name,
-                        'convert_name': convert_name
+                        'convert_name': convert_name,
+                        'base_url': url
                     })
             return files
 
@@ -331,7 +332,8 @@ class ANiStrm(_PluginBase):
             name_list = self.get_current_season_list()
             logger.info(f'本次处理 {len(name_list)} 个文件')
             for file_info in name_list:
-                if self.__touch_strm_file(file_name=file_info['convert_name'],content_name=file_info['file_name']):
+                file_url = file_info['base_url'] + quote(file_info['file_name'], safe='')
+                if self.__touch_strm_file(file_name=file_info['convert_name'], file_url=file_url):
                     logger.debug(f'创建 {file_info["convert_name"]}.strm 文件成功')
                     cnt += 1
         logger.info(f'新创建了 {cnt} 个strm文件')
