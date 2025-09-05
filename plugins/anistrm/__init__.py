@@ -162,9 +162,15 @@ class ANiStrm(_PluginBase):
 
         # 去掉中文和中文之间的空格
         cleaned_filename = re.sub(r'([\u4e00-\u9fff])\s+([\u4e00-\u9fff])', r'\1\2', cleaned_filename)
+
         # 去掉中文和英文之间的空格
         cleaned_filename = re.sub(r'([\u4e00-\u9fff]+)\s+([a-zA-Z0-9]+)\s*([\u4e00-\u9fff]+)', r'\1\2\3',
                                   cleaned_filename)
+        cleaned_filename = re.sub(r'([\u4e00-\u9fff]+)\s+([a-zA-Z0-9]+)', r'\1\2',
+                                  cleaned_filename)
+        cleaned_filename = re.sub(r'([a-zA-Z0-9]+)\s+([\u4e00-\u9fff]+)', r'\1\2',
+                                  cleaned_filename)
+
         # 将中文和中文之间的“-”替换为空格
         cleaned_filename = re.sub(r'([\u4e00-\u9fff])\s*-([\u4e00-\u9fff])', r'\1 \2', cleaned_filename)
         # 将中文和“-”替换为中文
